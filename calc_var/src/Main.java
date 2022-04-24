@@ -1,15 +1,13 @@
 import javax.swing.plaf.InsetsUIResource;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 //定义异常种类
 class WrongExpression extends Exception {
@@ -17,6 +15,15 @@ class WrongExpression extends Exception {
     }
 
     public WrongExpression(String message) {
+        super(message);
+    }
+}
+
+class WrongCalc extends Exception {
+    public WrongCalc() {
+    }
+
+    public WrongCalc(String message) {
         super(message);
     }
 }
@@ -354,8 +361,26 @@ public class Main {
     public static Logger logger = Logger.getLogger(Main.class.getName());
     public static HashMap<String, Num> nums = new HashMap<>();
 
+
+
+
     public static void main(String[] args) {
         Scanner sc = null;
+        Logger logger = Logger.getLogger(Main.class.getName());
+        String logfile = "./log.txt";
+        Handler fh = null;
+        try {
+            fh = new FileHandler("./log.txt");
+            logger.addHandler(fh);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert fh != null;
+        fh.setLevel(Level.INFO);
+        Handler ch = new ConsoleHandler();
+        ch.setLevel(Level.WARNING);
+        logger.addHandler(ch);
+
 
 //        Handler handler = new ConsoleHandler();
 //        logger.addHandler(handler);
@@ -376,13 +401,10 @@ public class Main {
                     System.out.println(calc.calcRes());
                 } catch (VarUndefined e) {
                     logger.log(Level.SEVERE, "wrong - variable undefined");
-//                    System.out.println("wrong - variable undefined");
                 } catch (VarUnassigned e) {
                     logger.log(Level.SEVERE, "wrong - variable unassigned");
-//                    System.out.println("wrong - variable unassigned");
                 } catch (WrongExpression e) {
                     logger.log(Level.SEVERE, "wrong - error expression");
-//                    System.out.println("wrong - error expression");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
